@@ -28,9 +28,8 @@ int main(int argc, char** argv) {
     nodelet::M_string remap(ros::names::getRemappings());
     nodelet::V_string nargv;
     nodelet.load(ros::this_node::getName(),
-            "zed_wrapper/ZEDWrapperNodelet",
-            remap, nargv);
-
+                 "zed_wrapper/ZEDWrapperNodelet",
+                 remap, nargv);
     ros::spin();
 
     return 0;

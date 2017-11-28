@@ -27,10 +27,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <arg name="base_frame"            default="zed_center" />
     <arg name="camera_frame"          default="zed_left_camera" />
     <arg name="depth_frame"           default="zed_depth_camera" />
+    <!-- Camera Params -->
+    <arg name="resolution"            default="2"/>
+    <arg name="depth_quality"         default="1"/>
+    <arg name="frame_rate"            default="60"/>
     <!-- Publish urdf zed -->
     <arg name="publish_urdf"          default="true" />
 
-    <node name="zed_wrapper_node" pkg="zed_wrapper" type="zed_wrapper_node" output="screen">
+    <node launch-prefix="xterm -e gdb -ex run --args" name="zed_wrapper_node" pkg="zed_wrapper" type="zed_wrapper_node" output="screen">
 
         <!-- publish odometry frame -->
         <param name="publish_tf"            value="$(arg publish_tf)" />
