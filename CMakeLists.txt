@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.7)
-
 project(zed_wrapper)
+
+# add kernel headers
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+#find_package(KernelHeaders REQUIRED)
+#include_directories(${KERNELHEADERS_INCLUDE_DIRS})
 
 # if CMAKE_BUILD_TYPE is not specified, take 'Release' as default
 IF(NOT CMAKE_BUILD_TYPE)

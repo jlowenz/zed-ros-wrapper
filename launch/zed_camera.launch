@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <!-- Publish urdf zed -->
     <arg name="publish_urdf"          default="true" />
 
-    <node launch-prefix="xterm -e gdb -ex run --args" name="zed_wrapper_node" pkg="zed_wrapper" type="zed_wrapper_node" output="screen">
+    <node name="zed_wrapper_node" pkg="zed_wrapper" type="zed_wrapper_node" output="screen">
 
         <!-- publish odometry frame -->
         <param name="publish_tf"            value="$(arg publish_tf)" />
