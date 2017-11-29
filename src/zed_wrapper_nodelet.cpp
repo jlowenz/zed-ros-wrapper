@@ -480,9 +480,12 @@ namespace zed_wrapper {
           ros::Time t1 = ros::Time::now();
           old_image = zed->grab(runParams); // Ask to not compute the depth
           ros::Time t2 = ros::Time::now();
+          // it's NOT true boot time - fails AFTER suspend!
           unsigned long long ts = zed->getCameraTimestamp();
+          //int exp = zed->getCameraSettings(sl::CAMERA_SETTINGS_EXPOSURE);
+          //ROS_INFO("Exposure: %d", exp);
           ros::Duration image_ts(ts / 1.0e9);
-          t = boot_time + image_ts;
+          //t = boot_time + image_ts;
           
           // ROS_INFO("Before  grab: %f", t1.toSec());
           // ROS_INFO("After   grab: %f", t2.toSec());
