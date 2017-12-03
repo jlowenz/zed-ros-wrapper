@@ -100,6 +100,8 @@ namespace zed_wrapper {
     std::string odometry_frame_id;
     std::string base_frame_id;
     std::string camera_frame_id;
+    bool intermediate_odom_;
+    geometry_msgs::TransformStamped camera_to_odom_;
     // initialization Transform listener
     boost::shared_ptr<tf2_ros::Buffer> tfBuffer;
     boost::shared_ptr<tf2_ros::TransformListener> tf_listener;
@@ -229,6 +231,8 @@ namespace zed_wrapper {
       odom.child_frame_id = base_frame_id;  // base_frame
       // conversion from Tranform to message
       geometry_msgs::Transform base2 = tf2::toMsg(base_transform);
+
+      
       // Add all value in odometry message
       odom.pose.pose.position.x = base2.translation.x;
       odom.pose.pose.position.y = base2.translation.y;
@@ -466,7 +470,7 @@ namespace zed_wrapper {
           }
           computeDepth = (depth_SubNumber + cloud_SubNumber + odom_SubNumber) > 0; // Detect if one of the subscriber need to have the depth information
           ros::Time t = ros::Time::now(); // Get current time
-          //t = t - ros::Duration(latency_offset);  // offset by estimated latency
+          t = t - ros::Duration(latency_offset);  // offset by estimated latency
 
           grabbing = true;
           if (computeDepth) {
@@ -656,7 +660,7 @@ namespace zed_wrapper {
       gpu_id = -1;
       zed_id = 0;
       odometry_DB = "";
-      latency_offset = 0.03;
+      latency_offset = 0.00;
 
       // compute the device time offset
       struct timespec boot;
@@ -671,13 +675,17 @@ namespace zed_wrapper {
       nh = getMTNodeHandle();
       nh_ns = getMTPrivateNodeHandle();
 
-      // Set  default cordinate frames
+      // Set default cordinate frames
       // If unknown left and right frames are set in the same camera coordinate frame
-      nh_ns.param<std::string>("odometry_frame", odometry_frame_id, "odometry_frame");
-      nh_ns.param<std::string>("base_frame", base_frame_id, "base_frame");
-      nh_ns.param<std::string>("camera_frame", camera_frame_id, "camera_frame");
-      nh_ns.param<std::string>("depth_frame", depth_frame_id, "depth_frame");
+      nh_ns.param<std::string>("odometry_frame", odometry_frame_id, "odom");
+      nh_ns.param<std::string>("base_frame", base_frame_id, "zed_center");
+      //nh_ns.param<std::string>("base_camera_frame", base_camera_frame_id, "zed_center");
+      nh_ns.param<std::string>("camera_frame", camera_frame_id, "zed_left_camera");
+      nh_ns.param<std::string>("depth_frame", depth_frame_id, "zed_depth_camera");
 
+      // are we using an intermediate odometry frame?
+      //intermediate_odom_ = base_camera_frame_id == base_odom_frame_id;
+      
       // Get parameters from launch file
       nh_ns.getParam("resolution", resolution);
       nh_ns.getParam("quality", quality);
@@ -701,6 +709,8 @@ namespace zed_wrapper {
       // Status of odometry TF
       ROS_INFO_STREAM("Publish " << odometry_frame_id << " [" << (publish_tf ? "TRUE" : "FALSE") << "]");
 
+      
+      
       std::string img_topic = "image_rect_color";
       std::string img_raw_topic = "image_raw_color";
 
@@ -761,6 +771,18 @@ namespace zed_wrapper {
       tfBuffer.reset( new tf2_ros::Buffer );
       tf_listener.reset( new tf2_ros::TransformListener(*tfBuffer) );
 
+      // if (intermediate_odom_) { // assumes FIXED transform
+      //   // listen for the transform from base_camera to base_odom
+      //   try {
+      //     camera_to_odom_ = tfBuffer->lookupTransform(base_odom_frame_id,
+      //                                                 base_camera_frame_id,
+      //                                                 0, ros::Duration(3.0));
+      //   } catch (tf2::TransformException& ex) {
+      //     ROS_ERROR(ex.what());
+      //   }
+                                                    
+      // }
+      
       // Create the ZED object
       zed.reset(new sl::Camera());
       // Initialize tf2 transformation
